@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS FileReader</title>
+  <script>
+//  input = document.querySelector('input[type="file"]')
+
+//  </script>
+<style>
+#fileview tbody{
+  display:block;
+  overflow:auto;
+
+}
+#fileview thead tr td th{
+  display:block;
+}
+#filelist tbody{
+  display:block;
+  overflow:auto;
+}
+#filelist thead tr td th{
+  display:block;
+}
+table {
+  overflow:scroll;
+}
+
+
+#fileview {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#fileview td, #fileview th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#fileview tr:nth-child(even){background-color: #f2f2f2;}
+
+#fileview tr:hover {background-color: #ddd;}
+
+#fileview th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
+</head>
+
+<body onload="testurl()">
+  <table id='base'>
+  <tr>
+  <div id='dirlist'>
+  <input type="file" />
+</div>
+</tr>
+<tr><td>
+<div id='fileview'></div></td><td>
+<div id='filelist'></div></td></tr>
+</table>
+
+
+    <script>
+  function testurl(){
+const urlParams = new URLSearchParams(window.location.search);
+console.log(location.search)
+console.log(urlParams.has('filename')); // true
+console.log(urlParams.get('product')); // "shirt"
+urlfilename=urlParams.get('filename');
+console.log(urlfilename);
+
+var jsonFile = new XMLHttpRequest();
+    jsonFile.open("GET",urlfilename,true);
+    jsonFile.send();
+
+    jsonFile.onreadystatechange = function() {
+        if (jsonFile.readyState== 4 && jsonFile.status == 200) {
+            document.getElementById("fileview").innerHTML = jsonFile.responseText;
+  rawdata=jsonFile.responseText;
+
+
+  var htmlstr="<table>";head=0;
+//      console.log(reader.result)
+  const lines = rawdata.split("\n").map(function(line){
+
+    htmlstr+="<tr>"
+    line.split(',').forEach(function separate(parts){
+    if(head==0)
+    htmlstr+="<th>"
+    else htmlstr+="<td>"
+    htmlstr+=parts;
+    if(head==0){
+    htmlstr+="</th>"
+
+    }
+    else htmlstr+="</td>"
+//        console.log(`htmlstr=${htmlstr}`)
+  })
+
+    htmlstr+="</tr>"
+    head=1
+
+    return line.split(',')
+  })
+  htmlstr+="</table>"
+  htmldiv=document.getElementById("fileview");
+  htmldiv.innerHTML=htmlstr
+
+
+//      console.log(lines)
+  }
+
+}
+
+var dirFile = new XMLHttpRequest();
+    dirFile.open("GET","list",true);
+    dirFile.send();
+
+    dirFile.onreadystatechange = function() {
+        if (dirFile.readyState== 4 && dirFile.status == 200) {
+            document.getElementById("filelist").innerHTML = dirFile.responseText;
+            rawdata=jsonFile.responseText;
+            console.log(rawdata)
+
+}}
+
+}
+  const reader=new FileReader();
+
+  input = document.querySelector('input[type="file"]')
+  input.addEventListener('change',function(e){
+    reader.onload=function (){
+      var htmlstr="<table>";head=0;
+//      console.log(reader.result)
+      const lines = reader.result.split("\n").map(function(line){
+
+        htmlstr+="<tr>"
+        line.split(',').forEach(function separate(parts){
+        if(head==0)
+        htmlstr+="<th>"
+        else htmlstr+="<td>"
+        htmlstr+=parts;
+        if(head==0){
+        htmlstr+="</th>"
+
+        }
+        else htmlstr+="</td>"
+//        console.log(`htmlstr=${htmlstr}`)
+      })
+
+        htmlstr+="</tr>"
+        head=1
+
+        return line.split(',')
+      })
+      htmlstr+="</table>"
+      htmldiv=document.getElementById("fileview");
+      htmldiv.innerHTML=htmlstr
+
+//      console.log(lines)
+    }
+    reader.readAsText(input.files[0])
+//    reader.readAsDataURL(input.files[0])
+
+  },false)
+
+  </script>
+
+</body>
+</html>

@@ -170,6 +170,16 @@ footer {
     </div>
 
     <script>
+  function getCol(matrix, col){
+       var column = [];
+       for(var i=0; i<matrix.length; i++){
+         num=parseFloat(matrix[i][col])
+         if(!isNaN(num))
+          column.push(num);
+       }
+       return column;
+    }
+    csvcontents=[];series=[];
   function testurl(){
 const urlParams = new URLSearchParams(window.location.search);
 console.log(location.search)
@@ -214,6 +224,29 @@ var jsonFile = new XMLHttpRequest();
 
     return line.split(',')
   })
+  csvcontents=[];
+  csvcontents= lines;
+
+
+  for(i=0;i<csvcontents[1].length;i++){
+    series[i]=getCol(csvcontents,i);
+  }
+  plotpoints=""
+  maximum=Math.max.apply(null, series[1]) // 4
+  minimum=Math.min.apply(null, series[1]) // 1
+  width = document.getElementById('graph').offsetWidth;
+  height = document.getElementById('filelist').offsetWidth/2;
+
+  for(i=0;i<series[1].length;i++){
+    plotpoints+=i+','+height*((series[1][i])-minimum)/(maximum-minimum)+' '
+  }
+  console.log(`Maximum=${maximum}`);
+  console.log(`width=${width}, height=${height}`);
+//viewbox="0 0 ${width} ${height}
+
+  svg1=`<svg height=${height} width=${width}  ">   <polyline points="${plotpoints}"   style="fill:none;stroke:black;stroke-width:3" /> </svg>`
+  divx=document.getElementById('graph');
+  divx.innerHTML=svg1;
   htmlstr+="</table>"
   htmldiv=document.getElementById("fileview");
   htmldiv.innerHTML=htmlstr
@@ -265,6 +298,7 @@ var dirFile = new XMLHttpRequest();
 
         return line.split(',')
       })
+      csvdata=lines;
       htmlstr+="</table>"
       htmldiv=document.getElementById("fileview");
       htmldiv.innerHTML=htmlstr
